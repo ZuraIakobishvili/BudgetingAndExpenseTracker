@@ -19,22 +19,27 @@ public class GetIncomesByCurrencyAndPeriodRepository : IGetIncomesByCurrencyAndP
 
     public async Task<List<Entities.Income>> GetIncomesByCurrencyAndPeriod(GetIncomesByCurrencyAndPeriodRequest request)
     {
-        var incomes = await GetIncomes(request);
-        var startDate = UserHelper.GetStartDay(request.Period);
-        var endDate = DateTime.Now;
+        using (_dbConnection)
+        {
+            var startDate = UserHelper.GetStartDay(request.Period);
+            var endDate = DateTime.Now;
 
-        var incomesByCurrency = incomes.Where(income =>
-           income.IncomeDate >= startDate &&
-           income.IncomeDate <= endDate &&
-           income.Currency == request.Currency);
+            var query = @"
+                SELECT * FROM Expenses
+                WHERE UserId = @UserId
+                    AND Currency = @Currency 
+                    AND ExpenseDate  >= @ExpenseDate  
+                    AND ExpenseDate  <= @EndDate";
 
-        return incomesByCurrency.ToList();
-    }
+            var parameters = new
+            {
+                request.UserId,
+                request.Currency,
+                StarDate = startDate,
+                EndDate = endDate
+            };
 
-    private async Task<List<Entities.Income>> GetIncomes(GetIncomesByCurrencyAndPeriodRequest request)
-    {
-        var query = "SELECT * FROM Incomes Where UserId = @UserId";
-        return (await _dbConnection.QueryAsync<Entities.Income>(query, new { request.UserId})).ToList();
-
+            return (await _dbConnection.QueryAsync<Entities.Income>(query, parameters)).ToList();
+        }
     }
 }

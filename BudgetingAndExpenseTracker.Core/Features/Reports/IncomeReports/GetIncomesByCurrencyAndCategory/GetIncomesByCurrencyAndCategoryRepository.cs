@@ -17,20 +17,29 @@ public class GetIncomesByCurrencyAndCategoryRepository : IGetIncomesByCurrencyAn
     }
     public async Task<List<Entities.Income>> GetIncomesByCurrencyAndCategory(GetIncomesByCurrencyAndCategoryRequest request)
     {
-        var startDate = UserHelper.GetStartDay(request.Period);
-        var endDate = DateTime.Now;
+        using (_dbConnection)
+        {
+            var startDate = UserHelper.GetStartDay(request.Period);
+            var endDate = DateTime.Now;
 
-        var incomes = await GetIncomes(request);
-        var incomesInPeriodByCurrencyAndCategory = incomes
-            .Where(income => income.IncomeDate >= startDate && income.IncomeDate <= endDate)
-            .Where(income => income.Currency == request.Currency && income.Category == request.Category);
+            var query = @"
+                SELECT * FROM Expenses
+                WHERE UserId = @UserId
+                    AND Category = @Category 
+                    AND Currency = @Currency 
+                    AND ExpenseDate  >= @ExpenseDate  
+                    AND ExpenseDate  <= @EndDate";
 
-        return incomesInPeriodByCurrencyAndCategory.ToList();
-    }
+            var parameters = new
+            {
+                request.UserId,
+                request.Category,
+                request.Currency,
+                StarDate = startDate,
+                EndDate = endDate
+            };
 
-    private async Task<List<Entities.Income>> GetIncomes(GetIncomesByCurrencyAndCategoryRequest request)
-    {
-        var query = "SELECT * FROM Income WHERE UserId = @UserId";
-        return (await _dbConnection.QueryAsync<Entities.Income>(query, new {request.UserId })).ToList();
+            return (await _dbConnection.QueryAsync<Entities.Income>(query, parameters)).ToList();
+        }
     }
 }

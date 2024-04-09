@@ -20,21 +20,27 @@ public class GetIncomesByCategoryAndPeriodRepository : IGetIncomesByCategoryAndP
 
     public async Task<List<Entities.Income>> GetIncomesByCategoryAndPeriod(GetIncomesByCategoryAndPeriodRequest request)
     {
-        var startDate = UserHelper.GetStartDay(request.Period);
-        var endDate = DateTime.Now;
-        var incomes = await GetIncomes(request);
+        using (_dbConnection)
+        {
+            var startDate = UserHelper.GetStartDay(request.Period);
+            var endDate = DateTime.Now;
 
-        var incomesByCategoryAndPeriod = incomes.Where(income =>
-           income.IncomeDate >= startDate &&
-           income.IncomeDate <= endDate &&
-           income.Category == request.Category);
+            var query = @"
+                SELECT * FROM Incomes
+                WHERE UserId = @UserId
+                    AND Category = @Category 
+                    AND ExpenseDate  >= @ExpenseDate  
+                    AND ExpenseDate  <= @EndDate";
 
-        return incomesByCategoryAndPeriod.ToList();
-    }
+            var parameters = new
+            {
+                request.UserId,
+                request.Category,
+                StarDate = startDate,
+                EndDate = endDate
+            };
 
-    private async Task<List<Entities.Income>> GetIncomes(GetIncomesByCategoryAndPeriodRequest request)
-    {
-        var query = "SELECT * FROM Incomes WHERE UserId = @UserId";
-        return (await _dbConnection.QueryAsync<Entities.Income>(query, new { request.UserId })).ToList();
+            return (await _dbConnection.QueryAsync<Entities.Income>(query, parameters)).ToList();
+        }
     }
 }

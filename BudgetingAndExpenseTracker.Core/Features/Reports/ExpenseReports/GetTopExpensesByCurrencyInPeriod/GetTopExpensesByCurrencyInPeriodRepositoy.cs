@@ -1,4 +1,5 @@
-﻿using BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetExpensesByCurrencyAndPeriod;
+﻿using BudgetingAndExpenseTracker.Core.Exceptions;
+using BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetExpensesByCurrencyAndPeriod;
 using BudgetingAndExpenseTracker.Core.Shared;
 using Dapper;
 using SendGrid.Helpers.Errors.Model;
@@ -20,22 +21,52 @@ public class GetTopExpensesByCurrencyInPeriodRepositoy : IGetTopExpensesByCurren
 
     public async Task<List<Entities.Expense>> GetTopExpenses(GetTopExpensesByCurrencyInPeriodRequest request)
     {
-      //  IsTopExpensesCountIsValid(request.TopExpensesCount);
-        var startDate = UserHelper.GetStartDay(request.Period);
-        var endDate = DateTime.Now;
-        var expenses = await GetExpenses(request);
-        var expensesByCurrency = expenses.Where(expense => expense.Currency == request.Currency);
+        if (request == null)
+        {
+            throw new ArgumentNullException(nameof(request));
+        }
 
-        var topExpenses = expensesByCurrency
-            .OrderByDescending(expense => expense.Amount)
-            .Take(request.TopExpensesCount);
+        IsTopExpensesCountIsValid(request.TopExpensesCount);
 
-        return topExpenses.ToList();
+        using (_dbConnection)
+        {
+            var startDate = UserHelper.GetStartDay(request.Period);
+            var endDate = DateTime.Now;
+
+            var query = @"
+                  WITH UserExpenses AS (
+                      SELECT ExpenseId, Amount, Currency, ExpenseDate
+                      FROM Expenses
+                      WHERE UserId = @UserId
+                          AND ExpenseDate >= @StartDate
+                          AND ExpenseDate <= @EndDate
+                  )
+                  SELECT TOP (@TopExpensesCount) ExpenseId, Amount, Currency, ExpenseDate
+                  FROM UserExpenses
+                  WHERE Currency = @Currency
+                  ORDER BY Amount DESC;";
+
+            var parameters = new
+            {
+                request.UserId,
+                request.Currency,
+                request.TopExpensesCount,
+                StartDate = startDate,
+                EndDate = endDate
+            };
+
+            using (_dbConnection)
+            {
+                return (await _dbConnection.QueryAsync<Entities.Expense>(query, parameters)).ToList();
+            }
+        }
     }
 
-    private async Task<List<Entities.Expense>> GetExpenses(GetTopExpensesByCurrencyInPeriodRequest request)
+    private void IsTopExpensesCountIsValid(int topCount)
     {
-        var query = "SELECT * FROM Expenses WHERE UserId = @UserId";
-        return (await _dbConnection.QueryAsync<Entities.Expense>(query, new { request.UserId })).ToList();
+        if(topCount <= 0)
+        {
+            throw new InvalidExpenseException("Top number can not be zero or negative");
+        }
     }
 }

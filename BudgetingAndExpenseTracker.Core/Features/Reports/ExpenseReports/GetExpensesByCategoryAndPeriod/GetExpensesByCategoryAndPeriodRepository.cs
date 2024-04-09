@@ -16,24 +16,31 @@ public class GetExpensesByCategoryAndPeriodRepository : IGetExpensesByCategoryAn
     {
         _dbConnection = dbConnection;
     }
+
     public async Task<List<Entities.Expense>> GetExpensesByCategoryAndPeriod(GetExpensesByCategoryAndPeriodRequest request)
     {
-        var expenses = await GetExpenses(request);
+        using (_dbConnection)
+        {
+            var startDate = UserHelper.GetStartDay(request.Period);
+            var endDate = DateTime.Now;
 
-        var startDate = UserHelper.GetStartDay(request.Period);
-        var endDate = DateTime.Now;
+            var query = @"
+                SELECT * FROM Expenses
+                WHERE UserId = @UserId
+                    AND Category = @Category 
+                    AND ExpenseDate  >= @ExpenseDate  
+                    AND ExpenseDate  <= @EndDate";
 
-        var expensesInPeriodByCurrency = expenses.Where(expense =>
-            expense.ExpenseDate >= startDate &&
-            expense.ExpenseDate <= endDate &&
-            expense.Category == request.Category);
+            var parameters = new
+            {
+                request.UserId,
+                request.Category,
+                StarDate = startDate,
+                EndDate = endDate
+            };
 
-        return expensesInPeriodByCurrency.ToList();
+            return (await _dbConnection.QueryAsync<Entities.Expense>(query, parameters)).ToList();
+        }
     }
-      
-    private async Task<List<Entities.Expense>> GetExpenses(GetExpensesByCategoryAndPeriodRequest request)
-    {
-        var query = "SELECT * FROM Expenses WHERE UserId = @UserId";
-        return (await _dbConnection.QueryAsync<Entities.Expense>(query, new { request.UserId })).ToList();
-    }
+    
 }

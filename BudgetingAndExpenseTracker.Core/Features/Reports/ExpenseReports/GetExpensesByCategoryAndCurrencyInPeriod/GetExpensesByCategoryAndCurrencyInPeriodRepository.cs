@@ -1,7 +1,5 @@
-﻿using BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetExpensesByCategoryAndPeriod;
-using BudgetingAndExpenseTracker.Core.Shared;
+﻿using BudgetingAndExpenseTracker.Core.Shared;
 using Dapper;
-using SendGrid.Helpers.Errors.Model;
 using System.Data;
 
 namespace BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetExpensesByCategoryAndCurrencyInPeriod;
@@ -20,21 +18,29 @@ public class GetExpensesByCategoryAndCurrencyInPeriodRepository : IGetExpensesBy
 
     public async Task<List<Entities.Expense>> GetExpensesByCategoryAndCurrencyInPeriod(GetExpensesByCategoryAndCurrencyInPeriodRequest request)
     {
-        var expenses = await GetExpenses(request);
-        var startDate = UserHelper.GetStartDay(request.Period);
-        var endDate = DateTime.Now;
+        using(_dbConnection)
+        {
+            var startDate = UserHelper.GetStartDay(request.Period);
+            var endDate = DateTime.Now;
 
+            var query = @"
+                SELECT * FROM Expenses
+                WHERE UserId = @UserId
+                    AND Category = @Category 
+                    AND Currency = @Currency 
+                    AND ExpenseDate  >= @ExpenseDate  
+                    AND ExpenseDate  <= @EndDate";
 
-        var expensesInPeriodByCategoryAndCurrency = expenses
-            .Where(expense => expense.ExpenseDate >= startDate && expense.ExpenseDate <= endDate)
-            .Where(expense => expense.Category == request.Category && expense.Currency == request.Currency);
+            var parameters = new
+            {
+                request.UserId,
+                request.Category,
+                request.Currency,
+                StarDate = startDate,
+                EndDate = endDate
+            };
 
-        return expensesInPeriodByCategoryAndCurrency.ToList();
-    }
-
-    private async Task<List<Entities.Expense>> GetExpenses(GetExpensesByCategoryAndCurrencyInPeriodRequest request)
-    {
-        var query = "SELECT * FROM Expenses WHERE UserId = @UserId";
-        return (await _dbConnection.QueryAsync<Entities.Expense>(query, new { request.UserId })).ToList();
+            return (await _dbConnection.QueryAsync<Entities.Expense>(query, parameters)).ToList();
+        }
     }
 }

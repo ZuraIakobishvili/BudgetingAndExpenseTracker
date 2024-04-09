@@ -20,28 +20,28 @@ public class GetExpensesByCurrencyAndPeriodRepository : IGetExpensesByCurrencyAn
 
     public async Task<List<Entities.Expense>> GetExpensesByCurrencyAndPeriod(GetExpensesByCurrencyAndPeriodRequest request)
     {
-        var expenses = await GetExpenses(request);
-
-        var startDate = UserHelper.GetStartDay(request.Period);
-        var endDate = DateTime.Now;
-
-        var expensesInPeriodByCurrency = expenses.Where(expense =>
-            expense.ExpenseDate >= startDate &&
-            expense.ExpenseDate <= endDate &&
-            expense.Currency == request.Currency);
-
-        if (!expensesInPeriodByCurrency.Any())
+        using (_dbConnection)
         {
-            throw new NotFoundException("No expenses found in the specified period and currency.");
+            var startDate = UserHelper.GetStartDay(request.Period);
+            var endDate = DateTime.Now;
+
+            var query = @"
+                SELECT * FROM Expenses
+                WHERE UserId = @UserId
+                    AND Category = @Category 
+                    AND ExpenseDate  >= @ExpenseDate  
+                    AND ExpenseDate  <= @EndDate";
+
+            var parameters = new
+            {
+                request.UserId,
+                request.Currency,
+                StarDate = startDate,
+                EndDate = endDate
+            };
+
+            return (await _dbConnection.QueryAsync<Entities.Expense>(query, parameters)).ToList();
         }
-
-        return expensesInPeriodByCurrency.ToList();
-    }
-
-    private async Task<List<Entities.Expense>> GetExpenses(GetExpensesByCurrencyAndPeriodRequest request)
-    {
-        var query = "SELECT * FROM Expenses WHERE UserId = @UserId";
-        return (await _dbConnection.QueryAsync<Entities.Expense>(query, new { request.UserId })).ToList();
     }
 }
 

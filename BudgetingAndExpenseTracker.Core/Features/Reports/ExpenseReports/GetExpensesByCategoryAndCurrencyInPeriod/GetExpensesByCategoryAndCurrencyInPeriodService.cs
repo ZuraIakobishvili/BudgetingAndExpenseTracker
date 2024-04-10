@@ -5,7 +5,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetExp
 
 public interface IGetExpensesByCategoryAndCurrencyInPeriodService
 {
-    Task<List<Entities.Expense>> GetExpensesByCategoryAndCurrencyInPeriodAsync(GetExpensesByCategoryAndCurrencyInPeriodRequest request);
+    Task<List<ExpensesResponse>> GetExpensesByCategoryAndCurrencyInPeriodAsync(GetExpensesByCategoryAndCurrencyInPeriodRequest request);
 }
 public class GetExpensesByCategoryAndCurrencyInPeriodService : IGetExpensesByCategoryAndCurrencyInPeriodService
 {
@@ -15,7 +15,7 @@ public class GetExpensesByCategoryAndCurrencyInPeriodService : IGetExpensesByCat
         _getExpensesByCategoryAndCurrencyInPeriodRepository = getExpensesByCategoryAndCurrencyInPeriodRepository;
     }
 
-    public async Task<List<Entities.Expense>> GetExpensesByCategoryAndCurrencyInPeriodAsync(GetExpensesByCategoryAndCurrencyInPeriodRequest request)
+    public async Task<List<ExpensesResponse>> GetExpensesByCategoryAndCurrencyInPeriodAsync(GetExpensesByCategoryAndCurrencyInPeriodRequest request)
     {
         ValidateExpensesRequest(request);
         var expenses = await _getExpensesByCategoryAndCurrencyInPeriodRepository.GetExpensesByCategoryAndCurrencyInPeriodAsync(request);
@@ -23,7 +23,17 @@ public class GetExpensesByCategoryAndCurrencyInPeriodService : IGetExpensesByCat
         {
             throw new InvalidExpenseException("Expenses by category and currensy are not found in this period");
         }
-        return expenses;
+
+        var expensesResponse = expenses.Select(e => new ExpensesResponse
+        {
+            ExpenseId = e.Id,
+            Currency = e.Currency,
+            Category = e.Category,
+            Amount = e.Amount,
+            ExpenseDate = e.ExpenseDate
+        }).ToList();
+
+        return expensesResponse;
     }
 
     private void ValidateExpensesRequest(GetExpensesByCategoryAndCurrencyInPeriodRequest request)

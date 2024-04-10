@@ -1,6 +1,11 @@
-﻿namespace BudgetingAndExpenseTracker.Core.Features.Expense.CreateExpense;
+﻿using BudgetingAndExpenseTracker.Core.Shared;
 
-public class CreateExpenseResponse : CreateExpenseRequest
+namespace BudgetingAndExpenseTracker.Core.Features.Expense.CreateExpense;
+
+public class CreateExpenseResponse 
 {
     public string? Message { get; set; }
+    public decimal Amount { get; set; }
+    public Currency Currency { get; set; }
+    public ExpenseCategory Category { get; set; }
 }

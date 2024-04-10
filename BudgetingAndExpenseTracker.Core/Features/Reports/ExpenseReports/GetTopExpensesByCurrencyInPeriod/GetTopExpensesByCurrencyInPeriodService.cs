@@ -1,11 +1,12 @@
-﻿using BudgetingAndExpenseTracker.Core.Exceptions;
+﻿using BudgetingAndExpenseTracker.Core.Entities;
+using BudgetingAndExpenseTracker.Core.Exceptions;
 using BudgetingAndExpenseTracker.Core.Shared;
 
 namespace BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetTopExpensesByCurrencyInPeriod;
 
 public interface IGetTopExpensesByCurrencyInPeriodService
 {
-    Task<List<Entities.Expense>> GetTopExpensesAsync(GetTopExpensesByCurrencyInPeriodRequest request);
+    Task<List<ExpensesResponse>> GetTopExpensesAsync(GetTopExpensesByCurrencyInPeriodRequest request);
 }
 public class GetTopExpensesByCurrencyInPeriodService : IGetTopExpensesByCurrencyInPeriodService
 {
@@ -15,7 +16,7 @@ public class GetTopExpensesByCurrencyInPeriodService : IGetTopExpensesByCurrency
         _getTopExpensesByCurrencyInPeriodRepositoy = getTopExpensesByCurrencyInPeriodRepositoy;
     }
 
-    public async Task<List<Entities.Expense>> GetTopExpensesAsync(GetTopExpensesByCurrencyInPeriodRequest request)
+    public async Task<List<ExpensesResponse>> GetTopExpensesAsync(GetTopExpensesByCurrencyInPeriodRequest request)
     {
         ValidateTopExpensesRequest(request);
         var topExpenses = await _getTopExpensesByCurrencyInPeriodRepositoy.GetTopExpensesAsync(request);
@@ -24,8 +25,16 @@ public class GetTopExpensesByCurrencyInPeriodService : IGetTopExpensesByCurrency
         {
             throw new InvalidExpenseException("No expenses found.");
         }
+        var expensesResponse = topExpenses.Select(e => new ExpensesResponse
+        {
+            ExpenseId = e.Id,
+            Amount = e.Amount,
+            Currency = e.Currency,
+            Category = e.Category,
+            ExpenseDate = e.ExpenseDate
+        }).ToList();
 
-        return topExpenses;
+        return expensesResponse;
     }
 
     private void ValidateTopExpensesRequest(GetTopExpensesByCurrencyInPeriodRequest request)

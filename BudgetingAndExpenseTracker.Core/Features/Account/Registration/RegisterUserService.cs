@@ -62,7 +62,6 @@ public class RegisterUserService : IRegisterUserService
         {
             throw new InvalidRequestException("Last name should start with an uppercase letter and contain only Latin letters.");
         }
-
     }
 }
 

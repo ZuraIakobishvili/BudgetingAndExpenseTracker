@@ -9,7 +9,7 @@ namespace BudgetingAndExpenseTracker.Api.Controllers;
 
 [ApiController]
 [Authorize("UserPolicy", AuthenticationSchemes = "Bearer")]
-[Route("api/expense-reports")]
+[Route("api/income-reports")]
 
 public class IncomeReportController : ControllerBase
 {

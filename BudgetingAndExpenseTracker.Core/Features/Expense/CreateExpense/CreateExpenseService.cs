@@ -56,7 +56,7 @@ public class CreateExpenseService : ICreateExpenseService
             throw new InvalidRequestException($"Expense by category '{request.Category}' in currency '{request.Currency}' exceeds the {Period.Year} limit.");
         }
 
-        var  createdExpense = await _createExpenseRepository.CreateExpenseAsync(request);
+        var createdExpense = await _createExpenseRepository.CreateExpenseAsync(request);
         if (!createdExpense)
         {
             throw new InvalidExpenseException("Expense can not be created.");

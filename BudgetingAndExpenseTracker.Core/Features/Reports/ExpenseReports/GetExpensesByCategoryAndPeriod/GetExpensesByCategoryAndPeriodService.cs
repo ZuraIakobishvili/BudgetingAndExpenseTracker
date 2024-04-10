@@ -6,7 +6,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetExp
 
 public interface IGetExpensesByCategoryAndPeriodService
 {
-    Task<List<Entities.Expense>> GetExpensesByCategoryAndPeriodAsync(GetExpensesByCategoryAndPeriodRequest request);
+    Task<List<ExpensesResponse>> GetExpensesByCategoryAndPeriodAsync(GetExpensesByCategoryAndPeriodRequest request);
 }
 public class GetExpensesByCategoryAndPeriodService : IGetExpensesByCategoryAndPeriodService
 {
@@ -15,18 +15,28 @@ public class GetExpensesByCategoryAndPeriodService : IGetExpensesByCategoryAndPe
     {
         _getExpensesByCategoryAndPeriodRepository = getExpensesByCategoryAndPeriodRepository;
     }
-    public async Task<List<Entities.Expense>> GetExpensesByCategoryAndPeriodAsync(GetExpensesByCategoryAndPeriodRequest request)
+    public async Task<List<ExpensesResponse>> GetExpensesByCategoryAndPeriodAsync(GetExpensesByCategoryAndPeriodRequest request)
     {
+        ValidateExpensesRequest(request);
         var expenses = await _getExpensesByCategoryAndPeriodRepository.GetExpensesByCategoryAndPeriodAsync(request);
 
         if (!expenses.Any())
         {
             throw new InvalidExpenseException("No expenses found in the specified period and category.");
         }
-        return expenses;
+        var expensesResponse = expenses.Select(e => new ExpensesResponse
+        {
+            ExpenseId = e.Id,
+            Amount = e.Amount,
+            Currency = e.Currency,
+            Category = e.Category,
+            ExpenseDate = e.ExpenseDate
+        }).ToList();
+
+        return expensesResponse;
     }
 
-    private void ValidateExpensesRequest(GetExpensesByCategoryAndCurrencyInPeriodRequest request)
+    private void ValidateExpensesRequest(GetExpensesByCategoryAndPeriodRequest request)
     {
         if (request == null)
         {
@@ -39,11 +49,6 @@ public class GetExpensesByCategoryAndPeriodService : IGetExpensesByCategoryAndPe
         }
 
         if (!Enum.IsDefined(typeof(ExpenseCategory), request.Category))
-        {
-            throw new InvalidRequestException("Expense category is not valid.");
-        }
-
-        if (!Enum.IsDefined(typeof(Currency), request.Currency))
         {
             throw new InvalidRequestException("Expense category is not valid.");
         }

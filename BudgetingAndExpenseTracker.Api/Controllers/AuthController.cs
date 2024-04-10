@@ -31,7 +31,7 @@ public class AuthController : ControllerBase
     [Route("registration")]
     public async Task<IActionResult> RegisterUser([FromBody] RegisterUserRequest request)
     {
-        var result = await _registerUserService.RegisterUser(request);
+        var result = await _registerUserService.RegisterUserAsync(request);
         return Ok(result);
     }
 
@@ -40,7 +40,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login(LoginRequest request)
     {
         var user = await _userManager.FindByEmailAsync(request.Email!);
-        var result = await _loginService.Login(request);
+        var result = await _loginService.LoginAsync(request);
         var jwt = _jwtTokenGenerator.Generate(user!.Id.ToString(), request.Email);
 
         return Ok(new { result, Token = jwt });

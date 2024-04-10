@@ -35,7 +35,7 @@ public class AnalyticController : ControllerBase
     public async Task<IActionResult> GetTotalSaving(GetTotalSavingsInPeriodRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _getTotalSavingsInPeriodService.GetTotalSavingsInPeriod(request);
+        var result = await _getTotalSavingsInPeriodService.GetTotalSavingsInPeriodAsync(request);
         return Ok(result);
     }
 
@@ -44,7 +44,7 @@ public class AnalyticController : ControllerBase
     public async Task<IActionResult> GetSavingPercent(GetSavingsPercentInPeriodRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _getSavingsPercentInPeriodService.GetSavingsPercentInPeriod(request);
+        var result = await _getSavingsPercentInPeriodService.GetSavingsPercentInPeriodAsync(request);
         return Ok(result);
     }
 
@@ -53,7 +53,7 @@ public class AnalyticController : ControllerBase
     public async Task<IActionResult> GetNextMonthExpenseForecasrt(ExpenseForecastRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _expenseForecastService.GetNextMonthExpenseForecast(request);
+        var result = await _expenseForecastService.GetNextMonthExpenseForecastAsync(request);
         return Ok(result);
     }
 
@@ -62,7 +62,7 @@ public class AnalyticController : ControllerBase
     public async Task<IActionResult> GetNextMonthIncomeForecast(IncomeForecastRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _incomeForecastService.GetNextMonthIncomeForecast(request);
+        var result = await _incomeForecastService.GetNextMonthIncomeForecastAsync(request);
         return Ok(result);
     }
 }

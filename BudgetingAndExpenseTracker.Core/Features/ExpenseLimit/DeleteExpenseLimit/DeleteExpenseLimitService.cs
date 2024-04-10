@@ -4,7 +4,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.ExpenseLimit.DeleteExpenseLim
 
 public interface IDeleteExpenseLimitService
 {
-    Task<DeleteExpenseLimitResponse> Delete(DeleteExpenseLimitRequest request);
+    Task<DeleteExpenseLimitResponse> DeleteLimitAsync(DeleteExpenseLimitRequest request);
 }
 
 public class DeleteExpenseLimitService : IDeleteExpenseLimitService
@@ -14,9 +14,9 @@ public class DeleteExpenseLimitService : IDeleteExpenseLimitService
     {
         _deleteExpenseLimitRepository = deleteExpenseLimitRepository;
     }
-    public async Task<DeleteExpenseLimitResponse> Delete(DeleteExpenseLimitRequest request)
+    public async Task<DeleteExpenseLimitResponse> DeleteLimitAsync(DeleteExpenseLimitRequest request)
     {
-        var deletedLimit = await _deleteExpenseLimitRepository.Delete(request);
+        var deletedLimit = await _deleteExpenseLimitRepository.DeleteLimitAsync(request);
         if (!deletedLimit)
         {
             throw new InvalidLimitException("Limit can not be deleted");

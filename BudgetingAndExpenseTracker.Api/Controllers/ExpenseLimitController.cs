@@ -35,7 +35,7 @@ public class ExpenseLimitController : ControllerBase
     public async Task<IActionResult> GetLimits(GetAllExpenseLimitsRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result =  await _getAllExpenseLimitsService.GetLimits(request);
+        var result =  await _getAllExpenseLimitsService.GetLimitsAsync(request);
         return Ok(result);
     }
 
@@ -44,7 +44,7 @@ public class ExpenseLimitController : ControllerBase
     public async Task<IActionResult> CreateLimit(CreateExpenseLimitRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _createExpenseLimitService.Create(request);
+        var result = await _createExpenseLimitService.CreateLimitAsync(request);
         return Ok(result);
     }
 
@@ -53,7 +53,7 @@ public class ExpenseLimitController : ControllerBase
     public async Task<IActionResult> UpdateLimit(UpdateExpenseLimitRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _updateExpenseLimitService.UpdateExpenseLimit(request);
+        var result = await _updateExpenseLimitService.UpdateExpenseLimitAsync(request);
         return Ok(result);
     }
 
@@ -62,7 +62,7 @@ public class ExpenseLimitController : ControllerBase
     public async Task<IActionResult> DeleteLimit(DeleteExpenseLimitRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _deleteExpenseLimitService.Delete(request);
+        var result = await _deleteExpenseLimitService.DeleteLimitAsync(request);
         return Ok(result);
     }
 }

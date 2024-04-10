@@ -35,7 +35,7 @@ public class ExpenseController : ControllerBase
     public async Task<IActionResult> GetExpenses(GetAllExpensesRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _getAllExpensesService.GetExpenses(request);
+        var result = await _getAllExpensesService.GetExpensesAsync(request);
         return Ok(result);
     }
 
@@ -44,7 +44,7 @@ public class ExpenseController : ControllerBase
     public async Task<IActionResult> CreateExpense(CreateExpenseRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _createExpenseService.CreateExpense(request);
+        var result = await _createExpenseService.CreateExpenseAsync(request);
         return Ok(result);
     }
 
@@ -53,7 +53,7 @@ public class ExpenseController : ControllerBase
     public async Task<IActionResult> UpdateExpense(UpdateExpenseRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _updateExpenseService.UpdateExpense(request);
+        var result = await _updateExpenseService.UpdateExpenseAsync(request);
         return Ok(result);
     }
 
@@ -62,7 +62,7 @@ public class ExpenseController : ControllerBase
     public async Task<IActionResult> DeleteExpense(DeleteExpenseRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _deleteExpenseService.DeleteExpense(request);
+        var result = await _deleteExpenseService.DeleteExpenseAsync(request);
         return Ok(result);
     }
 }

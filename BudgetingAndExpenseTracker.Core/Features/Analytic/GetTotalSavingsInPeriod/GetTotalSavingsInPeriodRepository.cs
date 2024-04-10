@@ -6,7 +6,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Analytic.GetTotalSavingsInPer
 
 public interface IGetTotalSavingsInPeriodRepository
 {
-    Task<decimal> GetTotalSavings(GetTotalSavingsInPeriodRequest request);
+    Task<decimal> GetTotalSavingsAsync(GetTotalSavingsInPeriodRequest request);
 }
 public class GetTotalSavingsInPeriodRepository : IGetTotalSavingsInPeriodRepository
 {
@@ -16,10 +16,10 @@ public class GetTotalSavingsInPeriodRepository : IGetTotalSavingsInPeriodReposit
         _dbConnection = dbConnection;
     }
 
-    public async Task<decimal> GetTotalSavings(GetTotalSavingsInPeriodRequest request)
+    public async Task<decimal> GetTotalSavingsAsync(GetTotalSavingsInPeriodRequest request)
     {
-        var incomes = await GetIncomes(request);
-        var expenses = await GetExpenses(request);
+        var incomes = await GetIncomesAsync(request);
+        var expenses = await GetExpensesAsync(request);
 
         var startDate = UserHelper.GetStartDay(request.Period);
         var endDate = DateTime.Now;
@@ -39,13 +39,13 @@ public class GetTotalSavingsInPeriodRepository : IGetTotalSavingsInPeriodReposit
     }
 
 
-    private async Task<List<Entities.Income>> GetIncomes(GetTotalSavingsInPeriodRequest request)
+    private async Task<List<Entities.Income>> GetIncomesAsync(GetTotalSavingsInPeriodRequest request)
     {
         var query = "SELECT * FROM Incomes WHERE UserId = @UserId";
         return (await _dbConnection.QueryAsync<Entities.Income>(query, new { request.UserId })).ToList();
     }
 
-    private async Task<List<Entities.Expense>> GetExpenses(GetTotalSavingsInPeriodRequest request)
+    private async Task<List<Entities.Expense>> GetExpensesAsync(GetTotalSavingsInPeriodRequest request)
     {
         var query = "SELECT * FROM Expenses WHERE UserId = @UserId";
         return (await _dbConnection.QueryAsync<Entities.Expense>(query, new { request.UserId })).ToList();

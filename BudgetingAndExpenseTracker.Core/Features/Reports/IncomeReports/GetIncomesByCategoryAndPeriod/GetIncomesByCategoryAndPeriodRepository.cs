@@ -7,7 +7,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Reports.IncomeReports.GetInco
 
 public interface IGetIncomesByCategoryAndPeriodRepository
 {
-    Task<List<Entities.Income>> GetIncomesByCategoryAndPeriod(GetIncomesByCategoryAndPeriodRequest request);
+    Task<List<Entities.Income>> GetIncomesByCategoryAndPeriodAsync(GetIncomesByCategoryAndPeriodRequest request);
 }
 
 public class GetIncomesByCategoryAndPeriodRepository : IGetIncomesByCategoryAndPeriodRepository
@@ -18,7 +18,7 @@ public class GetIncomesByCategoryAndPeriodRepository : IGetIncomesByCategoryAndP
         _dbConnection = dbConnection;
     }
 
-    public async Task<List<Entities.Income>> GetIncomesByCategoryAndPeriod(GetIncomesByCategoryAndPeriodRequest request)
+    public async Task<List<Entities.Income>> GetIncomesByCategoryAndPeriodAsync(GetIncomesByCategoryAndPeriodRequest request)
     {
         using (_dbConnection)
         {

@@ -5,7 +5,7 @@ using System.Data;
 namespace BudgetingAndExpenseTracker.Core.Features.Reports.IncomeReports.GetIncomesByCurrencyAndCategory;
 public interface IGetIncomesByCurrencyAndCategoryRepository
 {
-    Task<List<Entities.Income>> GetIncomesByCurrencyAndCategory(GetIncomesByCurrencyAndCategoryRequest request);
+    Task<List<Entities.Income>> GetIncomesByCategoryAndCurrencyInPeriodAsync(GetIncomesByCurrencyAndCategoryRequest request);
 }
 
 public class GetIncomesByCurrencyAndCategoryRepository : IGetIncomesByCurrencyAndCategoryRepository
@@ -15,7 +15,7 @@ public class GetIncomesByCurrencyAndCategoryRepository : IGetIncomesByCurrencyAn
     {
         _dbConnection = dbConnection;
     }
-    public async Task<List<Entities.Income>> GetIncomesByCurrencyAndCategory(GetIncomesByCurrencyAndCategoryRequest request)
+    public async Task<List<Entities.Income>> GetIncomesByCategoryAndCurrencyInPeriodAsync(GetIncomesByCurrencyAndCategoryRequest request)
     {
         using (_dbConnection)
         {

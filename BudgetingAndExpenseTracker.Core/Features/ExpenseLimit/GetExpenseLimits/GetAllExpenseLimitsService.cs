@@ -4,7 +4,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.ExpenseLimit.GetExpenseLimits
 
 public interface IGetAllExpenseLimitsService
 {
-    Task<List<Entities.ExpenseLimit>> GetLimits(GetAllExpenseLimitsRequest request);
+    Task<List<Entities.ExpenseLimit>> GetLimitsAsync(GetAllExpenseLimitsRequest request);
 }
 
 public class GetAllExpenseLimitsService : IGetAllExpenseLimitsService
@@ -14,9 +14,9 @@ public class GetAllExpenseLimitsService : IGetAllExpenseLimitsService
     {
         _getAllExpenseLimitsRepository = getAllExpenseLimitsRepository;
     }
-    public async Task<List<Entities.ExpenseLimit>> GetLimits(GetAllExpenseLimitsRequest request)
+    public async Task<List<Entities.ExpenseLimit>> GetLimitsAsync(GetAllExpenseLimitsRequest request)
     {
-        var limits = await _getAllExpenseLimitsRepository.GetExpenseLimits(request);
+        var limits = await _getAllExpenseLimitsRepository.GetExpenseLimitsAsync(request);
         if(limits.Count == 0)
         {
             throw new InvalidLimitException("Limits List is empty");

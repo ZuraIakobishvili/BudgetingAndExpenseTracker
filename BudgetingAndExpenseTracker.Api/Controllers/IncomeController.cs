@@ -34,7 +34,7 @@ public class IncomeController : ControllerBase
     public async Task<IActionResult> GetIncomes(GetAllIncomesRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _getAllIncomesService.GetAllIncomes(request);   
+        var result = await _getAllIncomesService.GetIncomesAsync(request);   
         return Ok(result);
     }
 
@@ -43,7 +43,7 @@ public class IncomeController : ControllerBase
     public async Task<IActionResult> Create(CreateIncomeRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result  =  await _createIncomeService.Create(request);
+        var result  =  await _createIncomeService.CreateIncomeAsync(request);
         return Ok(result);
     }
 
@@ -52,7 +52,7 @@ public class IncomeController : ControllerBase
     public async Task<IActionResult> Update(UpdateIncomeRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _updateIncomeService.UpdateIncome(request);
+        var result = await _updateIncomeService.UpdateIncomeAsync(request);
         return Ok(result);
     }
 
@@ -61,7 +61,7 @@ public class IncomeController : ControllerBase
     public async Task<IActionResult> Delete(DeleteIncomeRequest request)
     {
         request.UserId= UserHelper.GetCurrentUserId(User);
-        var result = await _deleteIncomeService.DeleteIncome(request);
+        var result = await _deleteIncomeService.DeleteIncomeAsync(request);
         return Ok(result);
     }
 }

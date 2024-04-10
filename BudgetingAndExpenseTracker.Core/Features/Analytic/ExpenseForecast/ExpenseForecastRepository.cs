@@ -6,7 +6,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Analytic.ExpenseForecast;
 
 public interface IExpenseForecastRepository
 {
-    Task<Dictionary<string, decimal>> GetNextMonthExpenseForecast(ExpenseForecastRequest request);
+    Task<decimal> GetNextMonthExpenseForecastAsync(ExpenseForecastRequest request);
 }
 
 public class ExpenseForecastRepository : IExpenseForecastRepository
@@ -18,16 +18,15 @@ public class ExpenseForecastRepository : IExpenseForecastRepository
         _dbConnection = dbConnection;
     }
 
-    public async Task<Dictionary<string, decimal>> GetNextMonthExpenseForecast(ExpenseForecastRequest request)
+    public async Task<decimal> GetNextMonthExpenseForecastAsync(ExpenseForecastRequest request)
     {
         var coefficient = ForecastCoefficient.ExpenseForecastCoefficient;
-        var monthsCount = await GetMonthCount(request);
+        var monthsCount = await GetMonthCountAsync(request);
 
         var query = @"
-            SELECT Category, Currency, SUM(Amount) AS TotalAmount
+            SELECT SUM(Amount) AS TotalAmount
             FROM Expenses
-            WHERE UserId = @UserId AND Category = @Category AND Currency = @Currency AND DATEPART(YEAR, ExpenseDate) = DATEPART(YEAR, GETDATE())
-            GROUP BY Category, Currency";
+            WHERE UserId = @UserId AND Category = @Category AND Currency = @Currency AND DATEPART(YEAR, ExpenseDate) = DATEPART(YEAR, GETDATE())";
 
         var parameters = new
         {
@@ -36,35 +35,20 @@ public class ExpenseForecastRepository : IExpenseForecastRepository
             request.Currency
         };
 
-        var expensesByCategoryAndCurrency = (await _dbConnection.QueryAsync<dynamic>(query, parameters)).ToList();
+        var totalExpense = await _dbConnection.QueryFirstOrDefaultAsync<decimal?>(query, parameters);
 
-        if (!expensesByCategoryAndCurrency.Any())
+        if (totalExpense == null)
         {
-            return new Dictionary<string, decimal>();
+            return 0;
         }
 
-        var averageExpensesByCategoryAndCurrency = new Dictionary<string, decimal>();
+        var averageExpensePerMonthWithCoefficient = Math.Round(totalExpense.Value / monthsCount * coefficient, 2);
 
-        foreach (var expense in expensesByCategoryAndCurrency)
-        {
-            var category = (ExpenseCategory)expense.Category;
-            var currency = (Currency)expense.Currency;
-            var totalExpenseForCategory = (decimal)expense.TotalAmount;
-            var averageExpensePerMonthWithCoefficient = Math.Round((totalExpenseForCategory / monthsCount) * coefficient, 2);
+        return averageExpensePerMonthWithCoefficient;
 
-            var key = $"{category}_{currency}";
-            if (!averageExpensesByCategoryAndCurrency.TryGetValue(key, out _))
-            {
-                averageExpensesByCategoryAndCurrency[key] = 0;
-            }
-
-            averageExpensesByCategoryAndCurrency[key] += averageExpensePerMonthWithCoefficient;
-        }
-
-        return averageExpensesByCategoryAndCurrency;
     }
 
-    private async Task<int> GetMonthCount(ExpenseForecastRequest request)
+    private async Task<int> GetMonthCountAsync(ExpenseForecastRequest request)
     {
         var query = "SELECT MIN(ExpenseDate) AS FirstExpenseDate FROM Expenses WHERE UserId = @UserId";
         var firstExpenseDate = await _dbConnection.QueryFirstOrDefaultAsync<DateTime?>(query, new { request.UserId });

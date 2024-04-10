@@ -1,10 +1,11 @@
 ﻿using BudgetingAndExpenseTracker.Core.Exceptions;
+using BudgetingAndExpenseTracker.Core.Shared;
 
 namespace BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetTopExpensesByCurrencyInPeriod;
 
 public interface IGetTopExpensesByCurrencyInPeriodService
 {
-    Task<List<Entities.Expense>> GetTopExpenses(GetTopExpensesByCurrencyInPeriodRequest request);
+    Task<List<Entities.Expense>> GetTopExpensesAsync(GetTopExpensesByCurrencyInPeriodRequest request);
 }
 public class GetTopExpensesByCurrencyInPeriodService : IGetTopExpensesByCurrencyInPeriodService
 {
@@ -14,10 +15,10 @@ public class GetTopExpensesByCurrencyInPeriodService : IGetTopExpensesByCurrency
         _getTopExpensesByCurrencyInPeriodRepositoy = getTopExpensesByCurrencyInPeriodRepositoy;
     }
 
-    public async Task<List<Entities.Expense>> GetTopExpenses(GetTopExpensesByCurrencyInPeriodRequest request)
+    public async Task<List<Entities.Expense>> GetTopExpensesAsync(GetTopExpensesByCurrencyInPeriodRequest request)
     {
-        IsTopExpensesCountIsValid(request.TopExpensesCount);
-        var topExpenses = await _getTopExpensesByCurrencyInPeriodRepositoy.GetTopExpenses(request);
+        ValidateTopExpensesRequest(request);
+        var topExpenses = await _getTopExpensesByCurrencyInPeriodRepositoy.GetTopExpensesAsync(request);
 
         if (!topExpenses.Any())
         {
@@ -27,11 +28,26 @@ public class GetTopExpensesByCurrencyInPeriodService : IGetTopExpensesByCurrency
         return topExpenses;
     }
 
-    private void IsTopExpensesCountIsValid(int count)
+    private void ValidateTopExpensesRequest(GetTopExpensesByCurrencyInPeriodRequest request)
     {
-        if (count <= 0)
+        if(request == null)
         {
-            throw new Exception("The count can not be null or negative.");
+             throw new ArgumentException(nameof(request));
+        }
+
+        if (request.TopExpensesCount <= 0)
+        {
+            throw new InvalidRequestException("Top number can not be zero or negative");
+        }
+
+        if (!Enum.IsDefined(typeof(Currency), request.Currency))
+        {
+            throw new InvalidRequestException("Expense currency is not valid.");
+        }
+
+        if (!Enum.IsDefined(typeof(Period), request.Period))
+        {
+            throw new InvalidRequestException("Expense period is not valid.");
         }
     }
 }

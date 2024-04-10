@@ -4,7 +4,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Expense.DeleteExpense;
 
 public interface IDeleteExpenseService
 {
-    Task<DeleteExpenseResponse> DeleteExpense(DeleteExpenseRequest request);
+    Task<DeleteExpenseResponse> DeleteExpenseAsync(DeleteExpenseRequest request);
 }
 public class DeleteExpenseService : IDeleteExpenseService
 {
@@ -13,9 +13,9 @@ public class DeleteExpenseService : IDeleteExpenseService
     {
         _deleteExpenseRepository = deleteExpenseRepositor;
     }
-    public async Task<DeleteExpenseResponse> DeleteExpense(DeleteExpenseRequest request)
+    public async Task<DeleteExpenseResponse> DeleteExpenseAsync(DeleteExpenseRequest request)
     {
-        var deletedExpense = await _deleteExpenseRepository.DeleteExpense(request);
+        var deletedExpense = await _deleteExpenseRepository.DeleteExpenseAsync(request);
         if (!deletedExpense)
         {
             throw new InvalidExpenseException("Expenses can not be deleted.");

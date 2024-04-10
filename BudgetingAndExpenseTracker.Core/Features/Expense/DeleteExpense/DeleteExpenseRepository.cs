@@ -5,7 +5,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Expense.DeleteExpense;
 
 public interface IDeleteExpenseRepository
 {
-    Task<bool> DeleteExpense(DeleteExpenseRequest request);
+    Task<bool> DeleteExpenseAsync(DeleteExpenseRequest request);
 }
 public class DeleteExpenseRepository : IDeleteExpenseRepository
 {
@@ -14,7 +14,7 @@ public class DeleteExpenseRepository : IDeleteExpenseRepository
     {
         _dbConnection = dbConnection;
     }
-    public async Task<bool> DeleteExpense(DeleteExpenseRequest request)
+    public async Task<bool> DeleteExpenseAsync(DeleteExpenseRequest request)
     {
         var query = "DELETE FROM Expenses WHERE Id = @Id AND UserId = @UserId";
         var success = await _dbConnection.ExecuteAsync(query, new { Id = request.ExpenseId, UserId = request.UserId });

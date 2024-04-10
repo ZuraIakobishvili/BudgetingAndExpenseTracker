@@ -5,7 +5,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.ExpenseLimit.DeleteExpenseLim
 
 public interface IDeleteExpenseLimitRepository
 {
-    Task<bool> Delete(DeleteExpenseLimitRequest request);
+    Task<bool> DeleteLimitAsync(DeleteExpenseLimitRequest request);
 }
 
 public class DeleteExpenseLimitRepository : IDeleteExpenseLimitRepository
@@ -15,7 +15,7 @@ public class DeleteExpenseLimitRepository : IDeleteExpenseLimitRepository
     {
         _dbConnection = dbConnection;
     }
-    public async Task<bool> Delete(DeleteExpenseLimitRequest request)
+    public async Task<bool> DeleteLimitAsync(DeleteExpenseLimitRequest request)
     {
         var query = "DELETE FROM Limits WHERE Id = @Id AND UserId = @UserId";
         var success = await _dbConnection.ExecuteAsync(query, new { Id = request.LimitId, UserId = request.UserId });

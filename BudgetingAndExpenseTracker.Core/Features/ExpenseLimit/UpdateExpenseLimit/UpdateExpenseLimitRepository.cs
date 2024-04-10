@@ -5,7 +5,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.ExpenseLimit.UpdateExpenseLim
 
 public interface IUpdateExpenseLimitRepository
 {
-    Task<bool> Update(UpdateExpenseLimitRequest request);
+    Task<bool> UpdateLimitAsync(UpdateExpenseLimitRequest request);
 }
 
 public class UpdateExpenseLimitRepository : IUpdateExpenseLimitRepository
@@ -16,7 +16,7 @@ public class UpdateExpenseLimitRepository : IUpdateExpenseLimitRepository
         _dbConnection = dbConnection;
     }
 
-    public async Task<bool> Update(UpdateExpenseLimitRequest request)
+    public async Task<bool> UpdateLimitAsync(UpdateExpenseLimitRequest request)
     {
         var query = "UPDATE Limits SET Amount = @Amount, Currency = @Currency, Category = @Category, LimitPeriod = @Period WHERE Id = @Id AND UserId = @UserId";
         var rowsAffected = await _dbConnection.ExecuteAsync(query, new

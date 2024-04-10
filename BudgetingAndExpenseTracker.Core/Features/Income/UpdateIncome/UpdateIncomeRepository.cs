@@ -5,7 +5,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Income.UpdateIncomeFeature;
 
 public interface IUpdateIncomeRepository
 {
-    Task<bool> Update(UpdateIncomeRequest request);
+    Task<bool> UpdateIncomeAsync(UpdateIncomeRequest request);
 }
 
 
@@ -17,7 +17,7 @@ public class UpdateIncomeRepository : IUpdateIncomeRepository
         _dbConnection = dbConnection;
     }
     
-    public async Task<bool> Update(UpdateIncomeRequest request)
+    public async Task<bool> UpdateIncomeAsync(UpdateIncomeRequest request)
     {
         var query = "UPDATE Incomes SET Amount = @Amount, Currency = @Currency, Category = @Category WHERE Id = @Id AND @UserId = UserId";
         var rowsAffected = await _dbConnection.ExecuteAsync(query, new

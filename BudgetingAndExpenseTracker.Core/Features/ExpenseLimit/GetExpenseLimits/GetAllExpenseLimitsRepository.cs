@@ -5,7 +5,7 @@ using System.Data;
 namespace BudgetingAndExpenseTracker.Core.Features.ExpenseLimit.GetExpenseLimits;
 public interface IGetAllExpenseLimitsRepository
 {
-    Task<List<Entities.ExpenseLimit>> GetExpenseLimits(GetAllExpenseLimitsRequest request);
+    Task<List<Entities.ExpenseLimit>> GetExpenseLimitsAsync(GetAllExpenseLimitsRequest request);
 }
 public class GetAllExpenseLimitsRepository : IGetAllExpenseLimitsRepository
 {
@@ -14,7 +14,7 @@ public class GetAllExpenseLimitsRepository : IGetAllExpenseLimitsRepository
     {
         _dbConnection = dbConnection;
     }
-    public async Task<List<Entities.ExpenseLimit>> GetExpenseLimits(GetAllExpenseLimitsRequest request)
+    public async Task<List<Entities.ExpenseLimit>> GetExpenseLimitsAsync(GetAllExpenseLimitsRequest request)
     {
         var query = "SELECT * FROM Limits WHERE UserId = @UserId";
         return (List<Entities.ExpenseLimit>)await _dbConnection.QueryAsync<Entities.ExpenseLimit>(query, new { request.UserId });

@@ -5,7 +5,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Income.CreateIncome;
 
 public interface ICreateIncomeRepository
 {
-    Task<bool> Create(CreateIncomeRequest request);
+    Task<bool> CreateIncomeAsync(CreateIncomeRequest request);
 }
 public class CreateIncomeRepository : ICreateIncomeRepository
 {
@@ -15,7 +15,7 @@ public class CreateIncomeRepository : ICreateIncomeRepository
         _dbConnection = dbConnection;
     }
 
-    public async Task<bool> Create(CreateIncomeRequest request)
+    public async Task<bool> CreateIncomeAsync(CreateIncomeRequest request)
     {
         var query = "INSERT INTO Incomes (Id, UserId, Amount, Currency, Category, IncomeDate) VALUES (@Id, @UserId, @Amount, @Currency, @Category, @IncomeDate)";
 

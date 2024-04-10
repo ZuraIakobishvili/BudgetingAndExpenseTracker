@@ -6,7 +6,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetExp
 
 public interface IGetExpensesByCategoryAndCurrencyInPeriodRepository
 {
-    Task<List<Entities.Expense>> GetExpensesByCategoryAndCurrencyInPeriod(GetExpensesByCategoryAndCurrencyInPeriodRequest request);
+    Task<List<Entities.Expense>> GetExpensesByCategoryAndCurrencyInPeriodAsync(GetExpensesByCategoryAndCurrencyInPeriodRequest request);
 }
 public class GetExpensesByCategoryAndCurrencyInPeriodRepository : IGetExpensesByCategoryAndCurrencyInPeriodRepository
 {
@@ -16,7 +16,7 @@ public class GetExpensesByCategoryAndCurrencyInPeriodRepository : IGetExpensesBy
         _dbConnection = dbConnection;
     }
 
-    public async Task<List<Entities.Expense>> GetExpensesByCategoryAndCurrencyInPeriod(GetExpensesByCategoryAndCurrencyInPeriodRequest request)
+    public async Task<List<Entities.Expense>> GetExpensesByCategoryAndCurrencyInPeriodAsync(GetExpensesByCategoryAndCurrencyInPeriodRequest request)
     {
         using(_dbConnection)
         {

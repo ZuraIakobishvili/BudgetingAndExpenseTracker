@@ -2,7 +2,7 @@
 
 public interface IGetSavingsPercentInPeriodService
 {
-    Task<GetSavingsPercentInPeriodResponse> GetSavingsPercentInPeriod(GetSavingsPercentInPeriodRequest request);
+    Task<GetSavingsPercentInPeriodResponse> GetSavingsPercentInPeriodAsync(GetSavingsPercentInPeriodRequest request);
 }
 public class GetSavingsPercentInPeriodService : IGetSavingsPercentInPeriodService
 {
@@ -12,9 +12,9 @@ public class GetSavingsPercentInPeriodService : IGetSavingsPercentInPeriodServic
         _getSavingsPercentInPeriodRepository = getSavingsPercentInPeriodRepository;
     }
 
-    public async Task<GetSavingsPercentInPeriodResponse> GetSavingsPercentInPeriod(GetSavingsPercentInPeriodRequest request)
+    public async Task<GetSavingsPercentInPeriodResponse> GetSavingsPercentInPeriodAsync(GetSavingsPercentInPeriodRequest request)
     {
-        var percent =  await _getSavingsPercentInPeriodRepository.GetSavingsPercentInPeriod(request);
+        var percent =  await _getSavingsPercentInPeriodRepository.GetSavingsPercentInPeriodAsync(request);
        
         return new GetSavingsPercentInPeriodResponse
         {

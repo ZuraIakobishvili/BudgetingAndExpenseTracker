@@ -5,7 +5,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Expense.UpdateExpense;
 
 public interface IUpdateExpenseRepository
 {
-    Task<bool> Update(UpdateExpenseRequest request);
+    Task<bool> UpdateExpenseAsync(UpdateExpenseRequest request);
 }
 public class UpdateExpenseRepository : IUpdateExpenseRepository
 {
@@ -14,7 +14,7 @@ public class UpdateExpenseRepository : IUpdateExpenseRepository
     {
         _dbConnection = dbConnection;
     }
-    public async Task<bool> Update(UpdateExpenseRequest request)
+    public async Task<bool> UpdateExpenseAsync(UpdateExpenseRequest request)
     {
 
         var query = "UPDATE Expenses SET Amount = @Amount, Currency = @Currency, Category = @Category WHERE Id = @Id AND UserId = @UserId";

@@ -1,10 +1,11 @@
 ﻿using BudgetingAndExpenseTracker.Core.Exceptions;
+using BudgetingAndExpenseTracker.Core.Shared;
 
 namespace BudgetingAndExpenseTracker.Core.Features.Analytic.IncomeForecast;
 
 public interface IIncomeForecastService
 {
-    Task<Dictionary<string, decimal>> GetNextMonthIncomeForecast(IncomeForecastRequest request);
+    Task<decimal> GetNextMonthIncomeForecastAsync(IncomeForecastRequest request);
 }
 public class IncomeForecastService : IIncomeForecastService
 {
@@ -14,14 +15,27 @@ public class IncomeForecastService : IIncomeForecastService
         _incomeForecastRepository = incomeForecastRepository;
     }
 
-    public async Task<Dictionary<string, decimal>> GetNextMonthIncomeForecast(IncomeForecastRequest request)
+    public async Task<decimal> GetNextMonthIncomeForecastAsync(IncomeForecastRequest request)
     {
-        var forecast = await _incomeForecastRepository.GetNextMonthIncomeForecast(request);
-        if (forecast == null)
+        ValidateIncomeForecastRequest(request);
+        return await _incomeForecastRepository.GetNextMonthIncomeForecastAsync(request);
+    }
+
+    private void ValidateIncomeForecastRequest(IncomeForecastRequest request)
+    {
+        if (request == null)
         {
-            throw new InvalidForecastException("Forecast can not be calculated.");
+            throw new ArgumentNullException(nameof(request));
         }
 
-        return forecast;
+        if (!Enum.IsDefined(typeof(ExpenseCategory), request.Category))
+        {
+            throw new InvalidRequestException("Limit category is not valid.");
+        }
+
+        if (!Enum.IsDefined(typeof(Currency), request.Currency))
+        {
+            throw new InvalidRequestException("Limit currency is not valid.");
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Data;
 namespace BudgetingAndExpenseTracker.Core.Features.ExpenseLimit.CerateExpenseLimit; 
 public interface ICreateExpenseLimitRepository
 {
-    Task<bool> CreateExpenseLimit(CreateExpenseLimitRequest request);
+    Task<bool> CreateExpenseLimitAsync(CreateExpenseLimitRequest request);
 }
 
 public class CreateExpenseLimitRepository : ICreateExpenseLimitRepository
@@ -14,7 +14,7 @@ public class CreateExpenseLimitRepository : ICreateExpenseLimitRepository
     {
         _dbConnection = dbConnection;
     }
-    public async Task<bool> CreateExpenseLimit(CreateExpenseLimitRequest request)
+    public async Task<bool> CreateExpenseLimitAsync(CreateExpenseLimitRequest request)
     {
 
         var query = "INSERT INTO Limits (Id, UserId, Amount, Currency, Category, LimitPeriod) " +

@@ -34,7 +34,7 @@ public class ExpenseReportController : ControllerBase
     public async Task<IActionResult> GetExpensesByCategoryAndPeriod(GetExpensesByCategoryAndPeriodRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _expensesByCategoryAndPeriodService.GetExpensesByCategoryAndPeriod(request);
+        var result = await _expensesByCategoryAndPeriodService.GetExpensesByCategoryAndPeriodAsync(request);
         return Ok(result);
     }
 
@@ -43,7 +43,7 @@ public class ExpenseReportController : ControllerBase
     public async Task<IActionResult> GetExpensesByCurrencyAndPeriod(GetExpensesByCurrencyAndPeriodRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _expensesByCurrencyAndPeriodService.GetExpensesByCurrencyAndPeriod(request);
+        var result = await _expensesByCurrencyAndPeriodService.GetExpensesByCurrencyAndPeriodAsync(request);
         return Ok(result);
     }
 
@@ -52,7 +52,7 @@ public class ExpenseReportController : ControllerBase
     public async Task<IActionResult> GetExpensesByCurrencyAndCategoryPeriod(GetExpensesByCategoryAndCurrencyInPeriodRequest request)
     {
         request.UserId= UserHelper.GetCurrentUserId(User);
-        var result = await _expensesByCategoryAndCurrencyInPeriodService.GetExpensesByCategoryAndCurrencyInPeriod(request);
+        var result = await _expensesByCategoryAndCurrencyInPeriodService.GetExpensesByCategoryAndCurrencyInPeriodAsync(request);
         return Ok(result);
     }
 
@@ -61,7 +61,7 @@ public class ExpenseReportController : ControllerBase
     public async Task<IActionResult> GetTopExpenses(GetTopExpensesByCurrencyInPeriodRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _getTopExpensesByCurrencyInPeriodService.GetTopExpenses(request);
+        var result = await _getTopExpensesByCurrencyInPeriodService.GetTopExpensesAsync(request);
         return Ok(result);
     }
 }

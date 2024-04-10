@@ -6,7 +6,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Account.Login;
 
 public interface ILoginService
 {
-    Task<LoginResponse> Login(LoginRequest request);
+    Task<LoginResponse> LoginAsync(LoginRequest request);
 }
 public class LoginService : ILoginService
 {
@@ -16,7 +16,7 @@ public class LoginService : ILoginService
         _userManager = userManager;
     }
 
-    public async Task<LoginResponse> Login(LoginRequest request)
+    public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
         ValidateLoginRequest(request);
 

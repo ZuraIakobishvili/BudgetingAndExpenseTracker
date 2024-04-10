@@ -6,7 +6,7 @@ using System.Data;
 namespace BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetExpensesByCategoryAndPeriod;
 public interface IGetExpensesByCategoryAndPeriodRepository
 {
-    Task<List<Entities.Expense>> GetExpensesByCategoryAndPeriod(GetExpensesByCategoryAndPeriodRequest request);
+    Task<List<Entities.Expense>> GetExpensesByCategoryAndPeriodAsync(GetExpensesByCategoryAndPeriodRequest request);
 }
 
 public class GetExpensesByCategoryAndPeriodRepository : IGetExpensesByCategoryAndPeriodRepository
@@ -17,7 +17,7 @@ public class GetExpensesByCategoryAndPeriodRepository : IGetExpensesByCategoryAn
         _dbConnection = dbConnection;
     }
 
-    public async Task<List<Entities.Expense>> GetExpensesByCategoryAndPeriod(GetExpensesByCategoryAndPeriodRequest request)
+    public async Task<List<Entities.Expense>> GetExpensesByCategoryAndPeriodAsync(GetExpensesByCategoryAndPeriodRequest request)
     {
         using (_dbConnection)
         {

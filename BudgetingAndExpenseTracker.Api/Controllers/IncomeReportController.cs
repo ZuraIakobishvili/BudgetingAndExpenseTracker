@@ -31,7 +31,7 @@ public class IncomeReportController : ControllerBase
     public async Task<IActionResult> GetIncomesByCurrenctyAndPeriod(GetIncomesByCurrencyAndPeriodRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _getIncomesByCurrencyAndPeriodService.GetIncomesByCurrencyAndPeriod(request);
+        var result = await _getIncomesByCurrencyAndPeriodService.GetIncomesByCurrencyAndPeriodAsync(request);
         return Ok(result);
     }
 
@@ -40,7 +40,7 @@ public class IncomeReportController : ControllerBase
     public async Task<IActionResult> GetIncomesByCategoryAndPeriod(GetIncomesByCategoryAndPeriodRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _getIncomesByCategoryAndPeriodService.GetIncomesByCategoryAndPeriod(request);
+        var result = await _getIncomesByCategoryAndPeriodService.GetIncomesByCategoryAndPeriodAsync(request);
         return Ok(result);
     }
 
@@ -49,7 +49,7 @@ public class IncomeReportController : ControllerBase
     public async Task<IActionResult> GetIncomesByCategoryAndCurrency(GetIncomesByCurrencyAndCategoryRequest request)
     {
         request.UserId = UserHelper.GetCurrentUserId(User);
-        var result = await _getIncomesByCurrencyAndCategoryService.GetIncomesByCategoryAndCurrencyInPeriod(request);
+        var result = await _getIncomesByCurrencyAndCategoryService.GetIncomesByCategoryAndCurrencyInPeriodAsync(request);
         return Ok(result);
     }
 }

@@ -9,7 +9,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetTop
 
 public interface IGetTopExpensesByCurrencyInPeriodRepositoy
 {
-    Task<List<Entities.Expense>> GetTopExpenses(GetTopExpensesByCurrencyInPeriodRequest request);
+    Task<List<Entities.Expense>> GetTopExpensesAsync(GetTopExpensesByCurrencyInPeriodRequest request);
 }
 public class GetTopExpensesByCurrencyInPeriodRepositoy : IGetTopExpensesByCurrencyInPeriodRepositoy
 {
@@ -19,15 +19,8 @@ public class GetTopExpensesByCurrencyInPeriodRepositoy : IGetTopExpensesByCurren
         _dbConnection = dbConnection;
     }
 
-    public async Task<List<Entities.Expense>> GetTopExpenses(GetTopExpensesByCurrencyInPeriodRequest request)
+    public async Task<List<Entities.Expense>> GetTopExpensesAsync(GetTopExpensesByCurrencyInPeriodRequest request)
     {
-        if (request == null)
-        {
-            throw new ArgumentNullException(nameof(request));
-        }
-
-        IsTopExpensesCountIsValid(request.TopExpensesCount);
-
         using (_dbConnection)
         {
             var startDate = UserHelper.GetStartDay(request.Period);
@@ -59,14 +52,6 @@ public class GetTopExpensesByCurrencyInPeriodRepositoy : IGetTopExpensesByCurren
             {
                 return (await _dbConnection.QueryAsync<Entities.Expense>(query, parameters)).ToList();
             }
-        }
-    }
-
-    private void IsTopExpensesCountIsValid(int topCount)
-    {
-        if(topCount <= 0)
-        {
-            throw new InvalidExpenseException("Top number can not be zero or negative");
         }
     }
 }

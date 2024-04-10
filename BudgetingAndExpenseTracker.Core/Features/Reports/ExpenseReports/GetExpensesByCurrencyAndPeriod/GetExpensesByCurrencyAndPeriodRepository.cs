@@ -8,7 +8,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetExp
 
 public interface IGetExpensesByCurrencyAndPeriodRepository
 {
-    Task<List<Entities.Expense>> GetExpensesByCurrencyAndPeriod(GetExpensesByCurrencyAndPeriodRequest request);
+    Task<List<Entities.Expense>> GetExpensesByCurrencyAndPeriodAsync(GetExpensesByCurrencyAndPeriodRequest request);
 }
 public class GetExpensesByCurrencyAndPeriodRepository : IGetExpensesByCurrencyAndPeriodRepository
 {
@@ -18,7 +18,7 @@ public class GetExpensesByCurrencyAndPeriodRepository : IGetExpensesByCurrencyAn
         _dbConnection = dbConnection;
     }
 
-    public async Task<List<Entities.Expense>> GetExpensesByCurrencyAndPeriod(GetExpensesByCurrencyAndPeriodRequest request)
+    public async Task<List<Entities.Expense>> GetExpensesByCurrencyAndPeriodAsync(GetExpensesByCurrencyAndPeriodRequest request)
     {
         using (_dbConnection)
         {

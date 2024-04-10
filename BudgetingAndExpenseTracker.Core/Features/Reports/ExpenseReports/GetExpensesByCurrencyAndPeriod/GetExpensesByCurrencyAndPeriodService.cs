@@ -1,10 +1,11 @@
 ﻿using BudgetingAndExpenseTracker.Core.Exceptions;
+using BudgetingAndExpenseTracker.Core.Shared;
 
 namespace BudgetingAndExpenseTracker.Core.Features.Reports.ExpenseReports.GetExpensesByCurrencyAndPeriod;
 
 public interface IGetExpensesByCurrencyAndPeriodService
 {
-    Task<List<Entities.Expense>> GetExpensesByCurrencyAndPeriod(GetExpensesByCurrencyAndPeriodRequest request);
+    Task<List<Entities.Expense>> GetExpensesByCurrencyAndPeriodAsync(GetExpensesByCurrencyAndPeriodRequest request);
 }
 public class GetExpensesByCurrencyAndPeriodService : IGetExpensesByCurrencyAndPeriodService
 {
@@ -14,9 +15,10 @@ public class GetExpensesByCurrencyAndPeriodService : IGetExpensesByCurrencyAndPe
         _getExpensesByCurrencyAndPeriodRepository = getExpensesByCurrencyAndPeriodRepository;
     }
 
-    public async Task<List<Entities.Expense>> GetExpensesByCurrencyAndPeriod(GetExpensesByCurrencyAndPeriodRequest request)
+    public async Task<List<Entities.Expense>> GetExpensesByCurrencyAndPeriodAsync(GetExpensesByCurrencyAndPeriodRequest request)
     {
-        var expenses = await _getExpensesByCurrencyAndPeriodRepository.GetExpensesByCurrencyAndPeriod(request);
+        ValidateExpensesRequest(request);
+        var expenses = await _getExpensesByCurrencyAndPeriodRepository.GetExpensesByCurrencyAndPeriodAsync(request);
 
         if (!expenses.Any())
         {
@@ -24,5 +26,23 @@ public class GetExpensesByCurrencyAndPeriodService : IGetExpensesByCurrencyAndPe
         }
 
         return expenses;
+    }
+
+    private void ValidateExpensesRequest(GetExpensesByCurrencyAndPeriodRequest request)
+    {
+        if (request == null)
+        {
+            throw new ArgumentNullException(nameof(request));
+        }
+
+        if (!Enum.IsDefined(typeof(Period), request.Period))
+        {
+            throw new InvalidRequestException("Expense period is not valid.");
+        }
+
+        if (!Enum.IsDefined(typeof(Currency), request.Currency))
+        {
+            throw new InvalidRequestException("Expense currency is not valid.");
+        }
     }
 }

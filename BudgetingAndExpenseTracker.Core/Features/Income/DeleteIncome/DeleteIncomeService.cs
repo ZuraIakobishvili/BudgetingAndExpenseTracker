@@ -4,7 +4,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Income.DeleteIncome;
 
 public interface IDeleteIncomeService
 {
-    Task<DeleteIncomeResponse> DeleteIncome(DeleteIncomeRequest request);
+    Task<DeleteIncomeResponse> DeleteIncomeAsync(DeleteIncomeRequest request);
 }
 public class DeleteIncomeService : IDeleteIncomeService
 {
@@ -14,9 +14,9 @@ public class DeleteIncomeService : IDeleteIncomeService
         _deleteIncomeRepository = deleteIncomeRepository;
     }
 
-    public async Task<DeleteIncomeResponse> DeleteIncome(DeleteIncomeRequest request)
+    public async Task<DeleteIncomeResponse> DeleteIncomeAsync(DeleteIncomeRequest request)
     {
-        var deletedIncome = await _deleteIncomeRepository.DeleteIncome(request);
+        var deletedIncome = await _deleteIncomeRepository.DeleteIncomeAsync(request);
 
         if (!deletedIncome)
         {

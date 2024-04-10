@@ -2,7 +2,7 @@
 
 public interface IGetTotalSavingsInPeriodService
 {
-    Task<GetTotalSavingsInPeriodResponse> GetTotalSavingsInPeriod(GetTotalSavingsInPeriodRequest request);
+    Task<GetTotalSavingsInPeriodResponse> GetTotalSavingsInPeriodAsync(GetTotalSavingsInPeriodRequest request);
 }
 public class GetTotalSavingsInPeriodService : IGetTotalSavingsInPeriodService
 {
@@ -12,9 +12,9 @@ public class GetTotalSavingsInPeriodService : IGetTotalSavingsInPeriodService
         _getTotalSavingsInPeriodRepository = getTotalSavingsInPeriodRepository;
     }
 
-    public async Task<GetTotalSavingsInPeriodResponse> GetTotalSavingsInPeriod(GetTotalSavingsInPeriodRequest request)
+    public async Task<GetTotalSavingsInPeriodResponse> GetTotalSavingsInPeriodAsync(GetTotalSavingsInPeriodRequest request)
     {
-        var savings  = await _getTotalSavingsInPeriodRepository.GetTotalSavings(request);
+        var savings  = await _getTotalSavingsInPeriodRepository.GetTotalSavingsAsync(request);
         return new GetTotalSavingsInPeriodResponse
         {
             Message = "Total savings:",

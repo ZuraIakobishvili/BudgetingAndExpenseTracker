@@ -5,7 +5,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Expense.CreateExpense;
 
 public interface ICreateExpenseRepository
 {
-    Task<bool> Create(CreateExpenseRequest request);
+    Task<bool> CreateExpenseAsync(CreateExpenseRequest request);
 }
 public class CreateExpenseRepository : ICreateExpenseRepository
 {
@@ -15,7 +15,7 @@ public class CreateExpenseRepository : ICreateExpenseRepository
         _dbConnection = dbConnection;
     }
 
-    public async Task<bool> Create(CreateExpenseRequest request)
+    public async Task<bool> CreateExpenseAsync(CreateExpenseRequest request)
     {
         var query = "INSERT INTO Expenses (Id, UserId, Amount, Currency, Category, ExpenseDate) " +
                    "VALUES (@Id, @UserId, @Amount, @Currency, @Category, @ExpenseDate)";

@@ -5,7 +5,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Income.GetIncomes;
 
 public interface IGetAllIncomesRepository
 {
-    Task<List<Entities.Income>> GetIncomes(GetAllIncomesRequest request);
+    Task<List<Entities.Income>> GetIncomesAsync(GetAllIncomesRequest request);
 }
 public class GetAllIncomesRepository : IGetAllIncomesRepository
 {
@@ -14,7 +14,7 @@ public class GetAllIncomesRepository : IGetAllIncomesRepository
     {
         _dbConnection = dbConnection;
     }
-    public async Task<List<Entities.Income>> GetIncomes(GetAllIncomesRequest request)
+    public async Task<List<Entities.Income>> GetIncomesAsync(GetAllIncomesRequest request)
     {
         var query = "SELECT * FROM Limits WHERE UserId = @UserId";
         return (List<Entities.Income>)await _dbConnection.QueryAsync<Entities.Income>(query, new { request.UserId });

@@ -5,7 +5,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Analytic.IncomeForecast;
 
 public interface IIncomeForecastService
 {
-    Task<decimal> GetNextMonthIncomeForecastAsync(IncomeForecastRequest request);
+    Task<IncomeForecastResponse> GetNextMonthIncomeForecastAsync(IncomeForecastRequest request);
 }
 public class IncomeForecastService : IIncomeForecastService
 {
@@ -15,10 +15,16 @@ public class IncomeForecastService : IIncomeForecastService
         _incomeForecastRepository = incomeForecastRepository;
     }
 
-    public async Task<decimal> GetNextMonthIncomeForecastAsync(IncomeForecastRequest request)
+    public async Task<IncomeForecastResponse> GetNextMonthIncomeForecastAsync(IncomeForecastRequest request)
     {
         ValidateIncomeForecastRequest(request);
-        return await _incomeForecastRepository.GetNextMonthIncomeForecastAsync(request);
+        var incomeForecast =  await _incomeForecastRepository.GetNextMonthIncomeForecastAsync(request);
+
+        return new IncomeForecastResponse
+        {
+            Message = $"Forecast for the next month in category-{request.Category} and currency-{request.Currency}: ",
+            Amount = incomeForecast
+        };
     }
 
     private void ValidateIncomeForecastRequest(IncomeForecastRequest request)

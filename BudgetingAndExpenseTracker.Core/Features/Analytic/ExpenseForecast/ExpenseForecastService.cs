@@ -5,7 +5,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Analytic.ExpenseForecast;
 
 public interface IExpenseForecastService
 {
-    Task<decimal> GetNextMonthExpenseForecastAsync(ExpenseForecastRequest request);
+    Task<ExpenseForecastResponse> GetNextMonthExpenseForecastAsync(ExpenseForecastRequest request);
 
 }
 public class ExpenseForecastService : IExpenseForecastService
@@ -16,10 +16,16 @@ public class ExpenseForecastService : IExpenseForecastService
         _expenseForecastRepository = expenseForecastRepository;
     }
 
-    public async Task<decimal> GetNextMonthExpenseForecastAsync(ExpenseForecastRequest request)
+    public async Task<ExpenseForecastResponse> GetNextMonthExpenseForecastAsync(ExpenseForecastRequest request)
     {
         ValidateForecastRequest(request);
-        return await _expenseForecastRepository.GetNextMonthExpenseForecastAsync(request);
+        var forecast =  await _expenseForecastRepository.GetNextMonthExpenseForecastAsync(request);
+
+        return new ExpenseForecastResponse
+        {
+            Message = $"Forecast for the next month in category-{request.Category} and currency-{request.Currency} :",
+            Amount = forecast
+        };
     }
 
     private void ValidateForecastRequest(ExpenseForecastRequest request)

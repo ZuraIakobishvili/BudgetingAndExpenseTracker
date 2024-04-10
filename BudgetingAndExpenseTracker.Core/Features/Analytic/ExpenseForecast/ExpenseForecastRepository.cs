@@ -21,7 +21,7 @@ public class ExpenseForecastRepository : IExpenseForecastRepository
     public async Task<decimal> GetNextMonthExpenseForecastAsync(ExpenseForecastRequest request)
     {
         var coefficient = ForecastCoefficient.ExpenseForecastCoefficient;
-        var monthsCount = await GetMonthCountAsync(request);
+        var monthsCount = await GetMonthCountAsync(request.UserId);
 
         var query = @"
             SELECT SUM(Amount) AS TotalAmount
@@ -48,10 +48,10 @@ public class ExpenseForecastRepository : IExpenseForecastRepository
 
     }
 
-    private async Task<int> GetMonthCountAsync(ExpenseForecastRequest request)
+    private async Task<int> GetMonthCountAsync(string userId)
     {
         var query = "SELECT MIN(ExpenseDate) AS FirstExpenseDate FROM Expenses WHERE UserId = @UserId";
-        var firstExpenseDate = await _dbConnection.QueryFirstOrDefaultAsync<DateTime?>(query, new { request.UserId });
+        var firstExpenseDate = await _dbConnection.QueryFirstOrDefaultAsync<DateTime?>(query, new { userId });
 
         if (firstExpenseDate == null)
         {

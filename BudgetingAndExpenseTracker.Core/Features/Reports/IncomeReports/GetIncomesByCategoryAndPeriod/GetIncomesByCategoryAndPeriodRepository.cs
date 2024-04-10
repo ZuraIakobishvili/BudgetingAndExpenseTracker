@@ -27,8 +27,8 @@ public class GetIncomesByCategoryAndPeriodRepository : IGetIncomesByCategoryAndP
                 SELECT * FROM Incomes
                 WHERE UserId = @UserId
                     AND Category = @Category 
-                    AND IncomeDateDate  >= @StartDate  
-                    AND ExpenseDate  <= @EndDate";
+                    AND IncomeDate  >= @StartDate  
+                    AND IncomeDate  <= @EndDate";
 
         var parameters = new
         {

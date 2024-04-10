@@ -6,7 +6,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Reports.IncomeReports.GetInco
 
 public interface IGetIncomesByCurrencyAndPeriodService
 {
-    Task<List<Entities.Income>> GetIncomesByCurrencyAndPeriodAsync(GetIncomesByCurrencyAndPeriodRequest request);
+    Task<List<IncomesReposne>> GetIncomesByCurrencyAndPeriodAsync(GetIncomesByCurrencyAndPeriodRequest request);
 }
 
 public class GetIncomesByCurrencyAndPeriodService : IGetIncomesByCurrencyAndPeriodService
@@ -17,7 +17,7 @@ public class GetIncomesByCurrencyAndPeriodService : IGetIncomesByCurrencyAndPeri
         _getIncomesByCurrencyAndPeriodRepository = getIncomesByCurrencyAndPeriodRepository;
     }
 
-    public async Task<List<Entities.Income>> GetIncomesByCurrencyAndPeriodAsync(GetIncomesByCurrencyAndPeriodRequest request)
+    public async Task<List<IncomesReposne>> GetIncomesByCurrencyAndPeriodAsync(GetIncomesByCurrencyAndPeriodRequest request)
     {
         ValidateIncomesRequest(request);
 
@@ -27,7 +27,16 @@ public class GetIncomesByCurrencyAndPeriodService : IGetIncomesByCurrencyAndPeri
             throw new InvalidIncomeException("Incomes by category not found in this period.");
         }
 
-        return incomes;
+        var incomesResponse = incomes.Select(i => new IncomesReposne
+        {
+            IncomeId = i.Id,
+            Amount = i.Amount,
+            Category = i.Category,
+            Currency = i.Currency,
+            IncomeDate = i.IncomeDate
+        }).ToList();
+
+        return incomesResponse;
     }
 
     private void ValidateIncomesRequest(GetIncomesByCurrencyAndPeriodRequest request)

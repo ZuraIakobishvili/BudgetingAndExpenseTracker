@@ -6,7 +6,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Reports.IncomeReports.GetInco
 
 public interface IGetIncomesByCurrencyAndCategoryService
 {
-    Task<List<Entities.Income>> GetIncomesByCategoryAndCurrencyInPeriodAsync(GetIncomesByCurrencyAndCategoryRequest request);
+    Task<List<IncomesResponse>> GetIncomesByCategoryAndCurrencyInPeriodAsync(GetIncomesByCurrencyAndCategoryRequest request);
 }
 public class GetIncomesByCurrencyAndCategoryService : IGetIncomesByCurrencyAndCategoryService
 {
@@ -16,7 +16,7 @@ public class GetIncomesByCurrencyAndCategoryService : IGetIncomesByCurrencyAndCa
         _getIncomesByCurrencyAndCategoryRepository = getIncomesByCurrencyAndCategoryRepository;
     }
 
-    public async Task<List<Entities.Income>> GetIncomesByCategoryAndCurrencyInPeriodAsync(GetIncomesByCurrencyAndCategoryRequest request)
+    public async Task<List<IncomesResponse>> GetIncomesByCategoryAndCurrencyInPeriodAsync(GetIncomesByCurrencyAndCategoryRequest request)
     {
         ValidateIncomesRequest(request);
         var incomes = await _getIncomesByCurrencyAndCategoryRepository.GetIncomesByCategoryAndCurrencyInPeriodAsync(request);
@@ -25,7 +25,16 @@ public class GetIncomesByCurrencyAndCategoryService : IGetIncomesByCurrencyAndCa
             throw new InvalidIncomeException("Incomes are not found in specific currenct and category");
         }
 
-        return incomes;
+        var incomesResponse = incomes.Select(i => new IncomesResponse
+        {
+            IncomeId = i.Id,
+            Amount = i.Amount,
+            Category = i.Category,
+            Currency = i.Currency,
+            IncomeDate = i.IncomeDate
+        }).ToList();
+
+        return incomesResponse;
     }
 
     private void ValidateIncomesRequest(GetIncomesByCurrencyAndCategoryRequest request)

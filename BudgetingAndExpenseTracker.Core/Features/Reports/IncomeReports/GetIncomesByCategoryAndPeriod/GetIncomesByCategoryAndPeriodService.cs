@@ -6,7 +6,7 @@ namespace BudgetingAndExpenseTracker.Core.Features.Reports.IncomeReports.GetInco
 
 public interface IGetIncomesByCategoryAndPeriodService
 {
-    Task<List<Entities.Income>> GetIncomesByCategoryAndPeriodAsync(GetIncomesByCategoryAndPeriodRequest request);
+    Task<List<IncomesResponse>> GetIncomesByCategoryAndPeriodAsync(GetIncomesByCategoryAndPeriodRequest request);
 }
 public class GetIncomesByCategoryAndPeriodService : IGetIncomesByCategoryAndPeriodService
 {
@@ -15,17 +15,26 @@ public class GetIncomesByCategoryAndPeriodService : IGetIncomesByCategoryAndPeri
     {
         _getIncomesByCategoryAndPeriodRepository = getIncomesByCategoryAndPeriodRepository;
     }
-    public async Task<List<Entities.Income>> GetIncomesByCategoryAndPeriodAsync(GetIncomesByCategoryAndPeriodRequest request)
+    public async Task<List<IncomesResponse>> GetIncomesByCategoryAndPeriodAsync(GetIncomesByCategoryAndPeriodRequest request)
     {
         ValidateIncomesRequest(request);
 
         var incomes = await _getIncomesByCategoryAndPeriodRepository.GetIncomesByCategoryAndPeriodAsync(request);
-        if (!incomes.Any()) 
+        if (!incomes.Any())
         {
             throw new InvalidIncomeException("Incomes not found in specific category and period");
         }
 
-        return incomes;
+        var incomesResponse = incomes.Select(i => new IncomesResponse
+        {
+            IncomeId = i.Id,
+            Amount = i.Amount,
+            Category = i.Category,
+            Currency = i.Currency,
+            IncomeDate = i.IncomeDate
+        }).ToList();
+
+        return incomesResponse;
     }
 
     private void ValidateIncomesRequest(GetIncomesByCategoryAndPeriodRequest request)

@@ -28,7 +28,6 @@ public class CreateIncomeRepository : ICreateIncomeRepository
             Currency = request.Currency,
             Amount = request.Amount
         };
-
         return await _dbConnection.ExecuteAsync(query, income) > 0;
     }
 }

@@ -48,11 +48,13 @@ public class RegisterUserService : IRegisterUserService
 
     private void RegisterUserValidation(RegisterUserRequest request)
     {
+        string pattern = @"^[A-Z][a-zA-Z]+$";
+
         if (request == null)
         {
             throw new ArgumentException("Request can not be null");
         }
-            string pattern = @"^[A-Z][a-zA-Z]+$";
+
         if (!Regex.IsMatch(request.FirstName, pattern))
         {
             throw new InvalidRequestException("First name should start with an uppercase letter and contain only Latin letters.");

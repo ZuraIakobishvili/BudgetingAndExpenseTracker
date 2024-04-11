@@ -1,6 +1,5 @@
 ﻿using BudgetingAndExpenseTracker.Core.Shared;
 using Dapper;
-using SendGrid.Helpers.Errors.Model;
 using System.Data;
 
 namespace BudgetingAndExpenseTracker.Core.Features.Reports.IncomeReports.GetIncomesByCategoryAndPeriod;

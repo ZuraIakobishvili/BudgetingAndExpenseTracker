@@ -25,7 +25,7 @@ public class ExceptionHandlingMiddleware
 
         catch (InvalidRequestException exception)
         {
-            _logger.LogError("{Message}, {StackTrace}", exception.Message, exception.StackTrace);
+            _logger.LogInformation("{Message}, {StackTrace}", exception.Message, exception.StackTrace);
             var problemDetails = new ProblemDetails
             {
                 Title = exception.Message,

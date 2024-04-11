@@ -26,7 +26,7 @@ public class DeleteIncomeService : IDeleteIncomeService
         return new DeleteIncomeResponse
         {
 
-            Message ="Income deleted succesfully"
+            Message = "Income deleted succesfully"
         };
     }
 }

@@ -30,7 +30,6 @@ public class CreateExpenseRepository : ICreateExpenseRepository
             Amount = request.Amount
         };
 
-        var rowsAffected = await _dbConnection.ExecuteAsync(query, expense) > 0;
-        return rowsAffected;
+        return  await _dbConnection.ExecuteAsync(query, expense) > 0;
     }
 }

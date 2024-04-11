@@ -21,7 +21,7 @@ public class IncomeForecastRepository : IIncomeForecastRepository
     public async Task<decimal> GetNextMonthIncomeForecastAsync(IncomeForecastRequest request)
     {
         var coefficient = ForecastCoefficient.IncomeForecastCoefficient;
-        var monthsCount = await GetMonthCountAsync(request);
+        var monthsCount = await GetMonthCountAsync(request.UserId);
 
         var query = @"
             SELECT SUM(Amount) AS TotalAmount
@@ -47,10 +47,10 @@ public class IncomeForecastRepository : IIncomeForecastRepository
         return averageIncomePerMonthWithCoefficient;
     }
 
-    private async Task<int> GetMonthCountAsync(IncomeForecastRequest request)
+    private async Task<int> GetMonthCountAsync(string userId)
     {
         var query = "SELECT MIN(IncomeDate) AS FirstIncomeDate FROM Incomes WHERE UserId = @UserId";
-        var firstIncomeDate = await _dbConnection.QueryFirstOrDefaultAsync<DateTime?>(query, new { request.UserId });
+        var firstIncomeDate = await _dbConnection.QueryFirstOrDefaultAsync<DateTime?>(query, new { userId });
 
         if (firstIncomeDate == null)
         {

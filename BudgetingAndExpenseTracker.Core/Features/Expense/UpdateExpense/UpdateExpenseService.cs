@@ -81,7 +81,6 @@ public class UpdateExpenseService : IUpdateExpenseService
         return totalIncomeSumInCurrency;
     }
 
-
     private async Task<Entities.ExpenseLimit> GetLimitInPeriodAsync(string userId, ExpenseCategory category, Currency currency, Period period)
     {
         var query = "SELECT * FROM Limits WHERE UserId = @UserId AND Category = @Category AND Currency = @Currency AND LimitPeriod = @Period";

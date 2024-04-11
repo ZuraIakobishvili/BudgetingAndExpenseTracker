@@ -42,16 +42,16 @@ public class ExpenseForecastRepository : IExpenseForecastRepository
             return 0;
         }
 
-        var averageExpensePerMonthWithCoefficient = Math.Round(totalExpense.Value / monthsCount * coefficient, 2);
+        var expenseForecast = Math.Round(totalExpense.Value / monthsCount * coefficient, 2);
 
-        return averageExpensePerMonthWithCoefficient;
+        return expenseForecast;
 
     }
 
     private async Task<int> GetMonthCountAsync(string userId)
     {
-        var query = "SELECT MIN(ExpenseDate) AS FirstExpenseDate FROM Expenses WHERE UserId = @UserId";
-        var firstExpenseDate = await _dbConnection.QueryFirstOrDefaultAsync<DateTime?>(query, new { userId });
+        var firstExpenseDateQuery = "SELECT MIN(ExpenseDate) AS FirstExpenseDate FROM Expenses WHERE UserId = @UserId";
+        var firstExpenseDate = await _dbConnection.QueryFirstOrDefaultAsync<DateTime?>(firstExpenseDateQuery, new { userId });
 
         if (firstExpenseDate == null)
         {

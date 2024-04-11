@@ -1,4 +1,5 @@
 ﻿using BudgetingAndExpenseTracker.Core.Exceptions;
+using BudgetingAndExpenseTracker.Core.Features.Expense.UpdateExpense;
 using BudgetingAndExpenseTracker.Core.Shared;
 using Dapper;
 using SendGrid.Helpers.Errors.Model;
@@ -36,9 +37,9 @@ public class CreateExpenseService : ICreateExpenseService
         var quarterStartDate = UserHelper.GetStartDay(Period.Quarter);
         var yearStartDate = UserHelper.GetStartDay(Period.Year);
 
-        var monthlyExpenses = await GetExpensesByCurrencyAndCategoryInPeriodAsync(request.UserId, request.Category, request.Currency, monthStartDate);
-        var quarterlyExpenses = await GetExpensesByCurrencyAndCategoryInPeriodAsync(request.UserId, request.Category, request.Currency, quarterStartDate);
-        var yearlyExpenses = await GetExpensesByCurrencyAndCategoryInPeriodAsync(request.UserId, request.Category, request.Currency, yearStartDate);
+        var monthlyExpenses = await GetExpenseByCurrencyAndCategoryInPeriodAsync(request.UserId, request.Category, request.Currency, monthStartDate);
+        var quarterlyExpenses = await GetExpenseByCurrencyAndCategoryInPeriodAsync(request.UserId, request.Category, request.Currency, quarterStartDate);
+        var yearlyExpenses = await GetExpenseByCurrencyAndCategoryInPeriodAsync(request.UserId, request.Category, request.Currency, yearStartDate);
 
 
         if (await IsPeriodExpenseLimitExceededAsync(request, monthLimit, monthlyExpenses))
@@ -71,7 +72,7 @@ public class CreateExpenseService : ICreateExpenseService
         };
     }
 
-    public async Task<decimal> GetExpensesByCurrencyAndCategoryInPeriodAsync(string userId, ExpenseCategory category, Currency currency, DateTime limitPeriodStartDate)
+    public async Task<decimal> GetExpenseByCurrencyAndCategoryInPeriodAsync(string userId, ExpenseCategory category, Currency currency, DateTime limitPeriodStartDate)
     {
         var query = "SELECT SUM(Amount) FROM Expenses WHERE UserId = @UserId AND Category = @Category AND Currency = @Currency AND ExpenseDate >= @StartDate AND ExpenseDate <= @EndDate";
         var endDate = DateTime.Now;
@@ -79,19 +80,15 @@ public class CreateExpenseService : ICreateExpenseService
         return totalExpense;
     }
 
-    private async Task<List<Entities.Income>> GetIncomesAsync(string userId)
-    {
-        var query = "SELECT * FROM Incomes WHERE UserId = @UserId";
-        return (await _dbConnection.QueryAsync<Entities.Income>(query, new { UserId = userId })).ToList();
-    }
-
     public async Task<decimal> GetTotalIncomeAmountInCurrencyAsync(string userId, Currency currency)
     {
-        var incomes = await GetIncomesAsync(userId);
+        var query = @"
+        SELECT SUM(Amount) AS TotalAmount
+        FROM Incomes
+        WHERE UserId = @UserId
+        AND Currency = @Currency";
 
-        var totalIncomeSumInCurrency = incomes
-            .Where(income => income.Currency == currency)
-            .Sum(x => x.Amount);
+        var totalIncomeSumInCurrency = await _dbConnection.QueryFirstOrDefaultAsync<decimal?>(query, new { UserId = userId, Currency = currency}) ?? 0;
         return totalIncomeSumInCurrency;
     }
 
@@ -109,11 +106,6 @@ public class CreateExpenseService : ICreateExpenseService
 
     private async Task<bool> IsPeriodExpenseLimitExceededAsync(CreateExpenseRequest request, Entities.ExpenseLimit limitPeriod, decimal periodExpenses)
     {
-        if (limitPeriod == null)
-        {
-            return false;
-        }
-
         var totalIncome = await GetTotalIncomeAmountInCurrencyAsync(request.UserId, request.Currency);
         var totalExpenses = periodExpenses + request.Amount;
 

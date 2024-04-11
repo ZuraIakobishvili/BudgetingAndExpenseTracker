@@ -65,19 +65,15 @@ public class UpdateExpenseService : IUpdateExpenseService
         return totalExpense;
     }
 
-    private async Task<List<Entities.Income>> GetIncomesAsync(string userId)
-    {
-        var query = "SELECT * FROM Incomes WHERE UserId = @UserId";
-        return (await _dbConnection.QueryAsync<Entities.Income>(query, new { UserId = userId })).ToList();
-    }
-
     private async Task<decimal> GetTotalIncomeAmountInCurrencyAsync(string userId, Currency currency)
     {
-        var incomes = await GetIncomesAsync(userId);
+        var query = @"
+        SELECT SUM(Amount) AS TotalAmount
+        FROM Incomes
+        WHERE UserId = @UserId
+        AND Currency = @Currency";
 
-        var totalIncomeSumInCurrency = incomes
-            .Where(income => income.Currency == currency)
-            .Sum(x => x.Amount);
+        var totalIncomeSumInCurrency = await _dbConnection.QueryFirstOrDefaultAsync<decimal?>(query, new { UserId = userId, Currency = currency }) ?? 0;
         return totalIncomeSumInCurrency;
     }
 
@@ -88,7 +84,7 @@ public class UpdateExpenseService : IUpdateExpenseService
 
         if (limit == null)
         {
-            throw new NotFoundException("You should add limits for all periods in this category and currency, before updating expense.");
+            throw new ("You should add limits for all periods in this category and currency, before updating expense.");
         }
         return limit;
     }
@@ -97,24 +93,25 @@ public class UpdateExpenseService : IUpdateExpenseService
     {
         if (limit == null)
         {
-            throw new NotFoundException($"Expense limit for category '{request.Category}' in currency '{request.Currency}' for {period} not found.");
+            throw new ExpenseNotFoundException($"Expense limit for category '{request.Category}' in currency '{request.Currency}' for {period} not found.");
         }
 
         if (await IsPeriodExpenseLimitExceededAsync(request, limit, periodExpenses))
         {
-            throw new InvalidRequestException($"Updated expense by category '{request.Category}' in currency '{request.Currency}' exceeds the {period} limit or total income.");
+            throw new InvalidRequestException($"Updated expense by category '{request.Category}' in currency '{request.Currency}' exceeds the {period} limit.");
         }
     }
 
     private async Task<bool> IsPeriodExpenseLimitExceededAsync(UpdateExpenseRequest request, Entities.ExpenseLimit limitPeriod, decimal periodExpenses)
     {
-        if (limitPeriod == null)
+        var totalIncome = await GetTotalIncomeAmountInCurrencyAsync(request.UserId, request.Currency);
+        var totalExpenses = periodExpenses + request.Amount;
+
+        if (totalExpenses > totalIncome)
         {
-            return false;
+            throw new InvalidExpenseException($"You don't have enough funds, please top up your balance.");
         }
 
-        var totalIncome = await GetTotalIncomeAmountInCurrencyAsync(request.UserId, request.Currency);
-
-        return periodExpenses + request.Amount > limitPeriod.Amount || periodExpenses + request.Amount > totalIncome;
+        return totalExpenses > limitPeriod.Amount;
     }
 }

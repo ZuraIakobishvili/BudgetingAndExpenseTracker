@@ -1,6 +1,7 @@
 ﻿using BudgetingAndExpenseTracker.Core.Exceptions;
 using BudgetingAndExpenseTracker.Core.Services.Logger;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace BudgetingAndExpenseTracker.Infrastructure.Middleware;
 public class ExceptionHandlingMiddleware
@@ -88,6 +89,19 @@ public class ExceptionHandlingMiddleware
         }
 
         catch (InvalidForecastException exception)
+        {
+            _logger.LogError("{Message}, {StackTrace}", exception.Message, exception.StackTrace);
+            var problemDetails = new ProblemDetails
+            {
+                Title = exception.Message,
+                Status = StatusCodes.Status400BadRequest
+            };
+
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsJsonAsync(problemDetails);
+        }
+
+        catch (ExpenseNotFoundException exception)
         {
             _logger.LogError("{Message}, {StackTrace}", exception.Message, exception.StackTrace);
             var problemDetails = new ProblemDetails

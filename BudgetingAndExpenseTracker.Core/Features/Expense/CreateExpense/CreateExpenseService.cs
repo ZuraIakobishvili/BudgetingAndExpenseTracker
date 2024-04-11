@@ -1,5 +1,4 @@
 ﻿using BudgetingAndExpenseTracker.Core.Exceptions;
-using BudgetingAndExpenseTracker.Core.Features.Expense.UpdateExpense;
 using BudgetingAndExpenseTracker.Core.Shared;
 using Dapper;
 using SendGrid.Helpers.Errors.Model;
@@ -41,21 +40,9 @@ public class CreateExpenseService : ICreateExpenseService
         var quarterlyExpenses = await GetExpenseByCurrencyAndCategoryInPeriodAsync(request.UserId, request.Category, request.Currency, quarterStartDate);
         var yearlyExpenses = await GetExpenseByCurrencyAndCategoryInPeriodAsync(request.UserId, request.Category, request.Currency, yearStartDate);
 
-
-        if (await IsPeriodExpenseLimitExceededAsync(request, monthLimit, monthlyExpenses))
-        {
-            throw new InvalidRequestException($"Expense by category '{request.Category}' in currency '{request.Currency}' exceeds the {Period.Month} limit.");
-        }
-
-        if (await IsPeriodExpenseLimitExceededAsync(request, quarterLimit, quarterlyExpenses))
-        {
-            throw new InvalidRequestException($"Expense by category '{request.Category}' in currency '{request.Currency}' exceeds the {Period.Quarter} limit.");
-        }
-
-        if (await IsPeriodExpenseLimitExceededAsync(request, yearLimit, yearlyExpenses))
-        {
-            throw new InvalidRequestException($"Expense by category '{request.Category}' in currency '{request.Currency}' exceeds the {Period.Year} limit.");
-        }
+        await ValidateExpenseLimitAsync(request, Period.Month, monthLimit, monthlyExpenses);
+        await ValidateExpenseLimitAsync(request, Period.Quarter, quarterLimit, quarterlyExpenses);
+        await ValidateExpenseLimitAsync(request, Period.Year, yearLimit, yearlyExpenses);
 
         var createdExpense = await _createExpenseRepository.CreateExpenseAsync(request);
         if (!createdExpense)
@@ -99,7 +86,7 @@ public class CreateExpenseService : ICreateExpenseService
 
         if (limit == null)
         {
-            throw new NotFoundException("You should add limits for all periods in this category and currency, before create expense.");
+            throw new ExpenseNotFoundException("You should add limits for all periods in this category and currency, before create expense.");
         }
         return limit;
     }
@@ -111,10 +98,23 @@ public class CreateExpenseService : ICreateExpenseService
 
         if (totalExpenses > totalIncome)
         {
-            throw new InvalidExpenseException($"Please add income in this currency.");
+            throw new InvalidExpenseException($"You don't have enough funds, please top up your balance.");
         }
 
         return totalExpenses > limitPeriod.Amount;
+    }
+
+    private async Task ValidateExpenseLimitAsync(CreateExpenseRequest request, Period period, Entities.ExpenseLimit limit, decimal periodExpenses)
+    {
+        if (limit == null)
+        {
+            throw new ExpenseNotFoundException($"Expense limit for category '{request.Category}' in currency '{request.Currency}' for {period} not found.");
+        }
+
+        if (await IsPeriodExpenseLimitExceededAsync(request, limit, periodExpenses))
+        {
+            throw new InvalidRequestException($"Create expense by category '{request.Category}' in currency '{request.Currency}' exceeds the {period} limit.");
+        }
     }
 
     private void ExpenseRequestValidation(CreateExpenseRequest request)
